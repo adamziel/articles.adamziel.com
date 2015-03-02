@@ -1,0 +1,16 @@
+name: Adam Zielinski
+description: I share my knowledge here
+meta_description: "Adam Zielinski - Articles about full-stack web development (PHP, Javascript, Symfony, Django, and so on)"
+
+markdown: redcarpet
+highlighter: pygments
+logo: false
+paginate: 1000
+baseurl: /
+permalink: /:title
+domain_name: 'http://articles.symfony2.guru'
+google_analytics: 'UA-59327638-2'
+
+# Details for the RSS feed generator
+url:            'http://articles.symfony2.guru'
+author:         'Adam Zieliński'

@@ -1,0 +1,150 @@
+
+html.js-supported body,
+html.wf-loading body {
+  visibility: hidden;
+}
+html.js-supported body,
+html.wf-loading body {
+  opacity: 0;
+}
+html.js-supported body,
+html.wf-loading body {
+  opacity: 0;
+}
+html.wf-active body,
+html.wf-inactive body {
+  visibility: visible;
+}
+html.wf-active body,
+html.wf-inactive body {
+  opacity: 1;
+}
+html.wf-active body,
+html.wf-inactive body {
+  -webkit-transition: opacity 1s ease-out;
+  -moz-transition: opacity 1s ease-out;
+  -ms-transition: opacity 1s ease-out;
+  -o-transition: opacity 1s ease-out;
+  transition: opacity 1s ease-out;
+  opacity: 1;
+}
+
+/* Homepage */
+
+/**
+ * Adjust home template to reflect the website
+ */
+.home-template .main-header.no-cover {
+    background: #3f3f3f;
+    margin-bottom: 0;
+}
+
+/* Menu */
+.home-template .no-cover .main-nav.overlay .subscribe-button {
+    color: #FFF;
+    border-color: transparent;
+}
+
+.home-template .no-cover .main-nav.overlay .subscribe-button:focus,
+.home-template .no-cover .main-nav.overlay .subscribe-button:hover,
+.home-template .no-cover .main-nav.overlay .subscribe-button:active {
+    color: #3f3f3f;
+    background: #FFF;
+    border-color: #FFF;
+}
+
+/* Posts list */
+
+.home-template .post,
+.home-template .post h2,
+.home-template .page-title,
+.home-template .page-description {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 100;
+}
+
+.home-template .page-title { font-size: 7.5rem }
+.home-template .page-description { font-size: 2.8rem; }
+
+.home-template .no-cover .page-title,
+.home-template .no-cover .page-description {
+    color: #FFF;
+}
+
+.home-template .posts-title,
+.home-template .posts-list {
+    box-sizing: border-box;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 100;
+}
+
+.home-template .posts-title {
+    font-size: 5rem;
+    margin-top: 2rem;
+    margin-bottom: 3rem;
+}
+
+.home-template .posts-list {
+    font-size: 3.6rem;
+}
+
+.home-template .posts-list li {
+    margin-bottom: 4rem;
+}
+
+.home-template .posts-list a {
+    margin-bottom: 1rem;
+    text-decoration: none;
+    color: #337ab7;
+    border-bottom: 1px solid #337ab7;
+}
+.home-template .posts-list a:hover {
+    color: #111;
+    border-bottom-color: #111;
+}
+
+/* General */
+.main-nav .subscribe-button {
+    margin-left: 10px;
+}
+
+/* We need to add display:inline in order to align the '>>' of the 'read more' link */
+.post-excerpt p {
+	display:inline;
+}
+
+.highlighttable pre code {
+    white-space: pre;
+}
+.highlighttable .code {
+    width: 100%;
+}
+
+/* Media */
+
+@media only screen and (max-width: 600px) {
+    .home-template .page-title { font-size: 5.5rem }
+    .home-template .page-description { font-size: 2.3rem; }
+}
+@media only screen and (max-width: 480px) {
+    .home-template .page-title { font-size: 4.5rem }
+    .home-template .page-description { font-size: 1.8rem; }
+}
+@media only screen and (max-width: 500px) {
+    .home-template .post:first-child {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+    .home-template .post {
+        margin-left: 16px;
+        margin-right: 16px;
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+    .home-template .main-header {
+        padding: 10% 0;
+    }
+}
+@media only screen and (max-width: 300px) {
+    .main-nav .subscribe-button { padding-left: 6px; padding-right: 6px; margin-left: 6px; }
+}

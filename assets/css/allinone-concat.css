@@ -1,0 +1,7 @@
+---
+# A hack to concat all stylesheets
+---
+
+{% include assets/css/screen.css %}
+{% include assets/css/main.css %}
+{% include assets/css/pygments.css %}
