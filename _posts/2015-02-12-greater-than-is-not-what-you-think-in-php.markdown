@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Greater-than in is not what you think in PHP"
+title:  "Greater-than in PHP is not what you think it is"
 date:   2015-02-12
 categories: php
 series: PHP Pitfalls
