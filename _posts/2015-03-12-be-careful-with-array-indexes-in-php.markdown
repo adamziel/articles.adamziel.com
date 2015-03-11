@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Be careful with array indexes in PHP"
-date:   2015-02-19
+date:   2015-03-12
 categories: php
 series: PHP Pitfalls
 ---

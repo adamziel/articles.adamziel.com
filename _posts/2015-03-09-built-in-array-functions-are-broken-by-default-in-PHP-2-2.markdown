@@ -1,57 +1,54 @@
 ---
 layout: post
-title:  "Built in array functions are broken by default in PHP (1/2)"
-date:   2015-03-05
+title:  "Built-in array functions are broken by default&nbsp;in&nbsp;PHP&nbsp;(2/2)"
+date:   2015-03-09
 categories: php
 series: PHP Pitfalls
 ---
 
-`sort()` may produce unpredictable results:
+What do you think will happen?
 
 {% highlight php startinline %}
-    $a = array('a', 0);
-    sort($a); // [0, 'a']
-    sort($a); // ['a', 0]
+$a = array(0 => 'Foo', 1 => 'Bar');
+$b = array(1 => 'Foo', 0 => 'Bar');
+
+var_dump($a == $b);
+var_dump($a === $b);
 {% endhighlight %}
 
-What's even more interesting, is that it is a documented behavior:
+The first comparison returns `true` and the second returns `false`. This is because
+`==` [compares only key/value pairs][php.operators-array], and `===` [checks the order and type, as well][php.operators-array].
 
-> Be careful when sorting arrays with mixed types values because
-> sort() can produce unpredictable results.
+# Searching in Arrays
 
----
-
-By default, `sort()` is suspectible to type juggling:
+Beware of [Array functions][php.array-functions] in their non-strict variant:
 
 {% highlight php startinline %}
-$a = ['11', '1e1', '0x0C'];
-sort($a);
-print_r($a);
-// Array
-// (
-//     [0] => 1e1  // 10
-//     [1] => 11   // 11
-//     [2] => 0x0C // 12
-// )
+$a = ['5.5'];
+// loose search:
+var_dump(in_array('5.50', $a)); // true
+
+// Strict search:
+var_dump(in_array('5.50', $a, true)); // false
+var_dump(in_array('5.5', $a, true)); // true
 {% endhighlight %}
 
-As you know from previous articles, this is an example
-of [numeric strings in action]({% post_url 2015-01-29-php-pitfalls-numeric-strings %}).
-
-To sort it as strings, you need to enforce sort mode using `SORT_STRING`:
+Another example:
 
 {% highlight php startinline %}
-$a = ['11', '1e1', '0x0C'];
-sort($a, SORT_STRING);
-print_r($a);
-// Array
-// (
-//     [0] => 0x0C
-//     [1] => 11
-//     [2] => 1e1
-// )
+$a = array('7.1' => '7.1');
+// false
+var_dump(array_key_exists('7.10000000000000001', $a));
+
+// true (non-strict)
+var_dump(in_array('7.10000000000000001', $a));
+
+// false (strict)
+var_dump(in_array('7.100000000000000025', $a, true));
 {% endhighlight %}
 
+**To summarize:**
+Do not use a loose comparison. Use a strong comparison and instruct built-in functions to do the same when possible.
 
 
 {% include series.html %}

@@ -1,38 +1,57 @@
 ---
 layout: post
-title:  "Never put newline after a return statement in javascript"
-date:   2015-02-17
+title:  "Pitfalls of scopes in Javascript (3/3)"
+date:   2015-03-14
 categories: javascript
 series: Javascript Pitfalls
 ---
 
-What will be logged in the following snippet?
-{% highlight javascript %}
+What will be logged when you click on a first `div` element in the following snippet?
+
+{% highlight html %}
+<div>The div element in question</div>
+<div>Lorem</div>
+<div>Ipsum</div>
+<div>Dolor</div>
+<script>
 function a() {
-    return
-        2
-    ;
+    var divs = document.getElementsByTagName('div');
+    for(var i=0,max=divs.length;i<max;i++) {
+        divs[i].onclick = function() {
+            console.log(i);
+        };
+    };
 }
-console.log(a());
+a();
+</script>
 {% endhighlight %}
 
-The output is `undefined`, but **why?**
+The answer is `4`. Why?
 
-[The `return` statement is terminated exclusively by a semicolon][ecma-12.9].
-It may also take an expression representing a value it should return; this expression MUST be
-given before any LineTerminator. When a LineTerminator is found after a `return`,[automatic semicolon insertion][ecma-7.9] kicks in, and our snippet gets interpreted like this:
+Because `i` does not exist in the local scope of our event handler and it is resolved from a parent scope.
+The event handler is called well after the loop has finished.
+What value does `i` have after the loop is finished? **`4`**.
+
+So, what we want to reference is not the loop counter, but is actually a snapshot of it from a given loop pass.
+We may, for example, create a self-calling function that receives `i` as a parameter:
 
 {% highlight javascript %}
-function a() {
-    return;
-    2;
-}
-console.log(a());
+for(var i=0,max=divs.length;i<max;i++) {
+    (function(i) {
+        // i is now a completely new local
+        // variable, unaffected by loop cycles
+        divs[i].onclick = function() {
+            console.log(i);
+        };
+    })(i);
+};
 {% endhighlight %}
 
-So, remember to always put your return expressions in the same line.
+If we were working with Arrays, I would suggest `Array.forEach`, but that is not available on a `NodeList`.
+
 
 {% include series.html %}
+
 
 [so-js-setinterval]: http://stackoverflow.com/a/731625/1510277
 [so-js-single-thread]: http://stackoverflow.com/questions/2734025/is-javascript-guaranteed-to-be-single-threaded

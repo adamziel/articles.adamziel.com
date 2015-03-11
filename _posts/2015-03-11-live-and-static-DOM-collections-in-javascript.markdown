@@ -1,46 +1,63 @@
 ---
 layout: post
-title:  "Disappearing object keys in javascript"
-date:   2015-02-10
+title:  "Live and static DOM collections in javascript"
+date:   2015-03-11
 categories: javascript
 series: Javascript Pitfalls
 ---
 
-Suppose you construct an object like the one below. What is the value of `data`?
+What is being logged in the following code?
 
 {% highlight javascript %}
-var anotherObject = {toString: function() { return "0"; }};
+document.body.appendChild(document.createElement('span'));
 
-var data = {};
+var collection1 = document.getElementsByTagName('span');
+var collection2 = document.querySelectorAll('span');
 
-data[0] = 'lorem';
-data['0'] = 'ipsum';
-data[Number(0)] = 'dolor';
-data[anotherObject] = 'sit';
-data[[]] = 'amet';
+console.log('collection1.length is', collection1.length);
+console.log('collection2.length is', collection2.length);
 
-console.log(data);
+document.body.appendChild(document.createElement('span'));
+
+console.log('collection1.length is', collection1.length);
+console.log('collection2.length is', collection2.length);
 {% endhighlight %}
 
-In this example, `data` is `{0: "amet", "": "amet"}`. *Why?*
+The answer is:
 
-[All keys get converted to strings via toString()][ecma-15.2.3.6] before being added to the object.
-
-`[]` [evaluates to ""][ecma-15.4.4.2], other keys evaluates to `0`.
-
-Let's go even further. What is being logged in the following case?
-
-{% highlight javascript %}
-var data = {};
-data[0.1+0.2] = 1;
-
-console.log(data);
+{% highlight text %}
+collection1.length is 1
+collection2.length is 1
+collection1.length is 2
+collection2.length is 1
 {% endhighlight %}
 
-**`Object {0.30000000000000004: 1}`**.
+**Why? (Some boring intro first)**
 
-Why? Because of how floating-point numbers work. More on that in next article:
-[there are no integers in javascript]({% post_url 2015-01-29-php-pitfalls-numeric-strings %}).
+When requesting nodes from `document` based methods, you don't get an Array instance. You get one of these:
+
+* [NodeList][mozilla-nodelist] - consists of Nodes
+* [HTMLCollection][mozilla-htmlcollection] - consists of Elements, same methods as in NodeList + [namedItem()][mozilla-htmlcollection#methods]
+
+Regardless of which you receive, your collection may either be **live** or **static**.
+
+* **[live collection][w3-collection]** is updated whenever DOM is updated
+* **[static collection][w3-collection]** is a snapshot that remains the same across DOM updates
+
+In general, collections are **live**, except for in the following cases when they become static:
+
+1. [Event path of DOM Event whose target is part of DOM][w3-dispatching-events]
+    (this way, you may remove one of its parents from DOM and its snapshot will still be available via event.path)
+1. [**When you use `document.querySelectorAll`**][w3-interface-parentnode]
+
+**Now, on to the point**
+
+In our snippet, we request two collections via
+
+* `collection1 = getElementsByTagName` - a live collection
+* `collection2 = querySelectorAll` - a static collection
+
+After we add a second `span` to DOM, only `collection1` reflects the change because.
 
 {% include series.html %}
 

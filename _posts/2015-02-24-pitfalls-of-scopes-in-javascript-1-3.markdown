@@ -1,49 +1,42 @@
 ---
 layout: post
-title:  "Arrays and array-lookalikes in Javascript"
-date:   2015-03-04
+title:  "Pitfalls of scopes in Javascript (1/3)"
+date:   2015-02-24
 categories: javascript
 series: Javascript Pitfalls
 ---
 
-What will happen in the following snippet of code?
+The specs does not mention scopes a lot.
+
+* [Section 8.6.2][ecma-8.6.2] says that there is an internal property referred to as [[scope]]
+* [Section 10.3][ecma-10.3] says that some locally available variables are not part of [[scope]]
+
+For the sake of clarity, when I refer to a Scope, I mean a [context][ecma-10.3]
+that allows you to define and use a local variable that is not visible to any parent context.
+
+---
+
+By default, there is only a global scope. You can **only** create a new scope by creating
+and calling a function. You may be tempted to try additional ways, however:
+
+* A `with` statement does not create a new scope, it just tricks you
+   by [temporarily augmenting the scope it's declared in][ecma-12.10]
 
 {% highlight javascript %}
-function test() { arguments.slice(0, 1);}
-test("1","2","3");
-
-var collection = document.getElementsByTagName('span');
-collection.forEach(function() {});
-{% endhighlight %}
-
-Let's take a look:
-
-* `arguments` is not an Array, it's an [`Arguments Object`][ecma-10.6]
-* `collection` is not an Array, it's a [HTMLCollection][mozilla-htmlcollection]
-
-Therefore this code will fail with an error `undefined is not a function`
-
-**What do we do then?**
-
-You can convert both of them to an `Array` with this little trick:
-
-{% highlight javascript %}
-argArray = Array.prototype.slice.call(arguments);
-collection = Array.prototype.slice.call(collection);
-{% endhighlight %}
-
-Since `Array.prototype.slice` returns an Array, we can feed it our Array-like object and the snippet will work with no errors.
-{% highlight javascript %}
-function test() {
-    var argArray = Array.prototype.slice.call(arguments);
-    argArray.slice(0, 1);
+var a = {};
+console.log(typeof a); // a is "object"
+with({a: 1}) {
+    console.log(typeof a); // a is "number"
+    var bar = 1; // let's create a new variable
 }
-test("1","2","3");
-
-var collection = document.getElementsByTagName('span');
-collection = Array.prototype.slice.call(collection);
-collection.forEach(function() {});
+console.log(typeof a); // a is an "object" again
+console.log(bar); // logs: 1, bummer!
 {% endhighlight %}
+
+* A `catch` statement does the same thing to give you the access to
+  the exception
+
+* `let`, `const`, and other ES6 goodies are not covered
 
 
 {% include series.html %}

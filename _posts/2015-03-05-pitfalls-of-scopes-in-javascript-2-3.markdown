@@ -1,65 +1,70 @@
 ---
 layout: post
-title:  "Never put newline after a return statement in javascript"
-date:   2015-02-17
+title:  "Pitfalls of scopes in Javascript (2/3)"
+date:   2015-03-05
 categories: javascript
 series: Javascript Pitfalls
 ---
 
-What is being logged in the following code?
+Guess what the output of this snippet would be:
 
 {% highlight javascript %}
-document.body.appendChild(document.createElement('span'));
-
-var collection1 = document.getElementsByTagName('span');
-var collection2 = document.querySelectorAll('span');
-
-console.log('collection1.length is', collection1.length);
-console.log('collection2.length is', collection2.length);
-
-document.body.appendChild(document.createElement('span'));
-
-console.log('collection1.length is', collection1.length);
-console.log('collection2.length is', collection2.length);
+var example = 1;
+function puzzle2() {
+    console.log(example);
+    if(example === 1) {
+        var example = 2;
+    }
+};
+puzzle2();
+console.log(example)
 {% endhighlight %}
 
-The answer is:
+`undefined` and number `1` respectively. Of course! But why?
 
-{% highlight text %}
-collection1.length is 1
-collection2.length is 1
-collection1.length is 2
-collection2.length is 1
+This behavior is called "Hoisting" and is described formally in [ECMAScript Edition 5.1 section 10.5][ecma-10.5],
+and in more approachable diction at [Mozilla var statement reference][mozilla-hoisting], which says:
+
+> Because variable declarations (and declarations in general) are processed
+> before any code is executed, declaring a variable anywhere in the code
+> is equivalent to declaring it at the top
+
+So what happens under the hood in the snippet of code above, is roughly explained
+in the following steps.
+
+1. Execution of `puzzle2` function is requested
+1. Before any code is executed, it is scanned to search for declarations (`var`, `function`).
+    These declarations are used to create a new scope. Since we declared `example` in line 5
+    with `var example = 2;`, the newly created scope contains a local variable `example`
+    [with no value (undefined)][ecma-12.2]. Any further references to `example` will be resolved
+    to that variable and not to a parent-scope variable with the same name.
+1. `console.log(example)` logs `undefined` since this variable has no value yet
+1. `if(example === 1)` evaluates to `false`
+1. `puzzle2()` is finished, `console.log(example)` logs `1`  since the current scope was never affected
+
+Function declarations are processed in the same way, but the result may seem counterintuitive.
+Since declarations are processed before executing a code and assigning values, you get undefined values when working with variable assignments. However, function body is a part of its declaration, so you may call a function right away. The last declaration always wins:
+
+{% highlight javascript %}
+var exampleNumber = 1;
+function puzzle() {
+    function exampleFn1() { console.log("1 works"); };
+    exampleNumber = 2;
+    exampleFn1(); // logged: "1 works"
+    exampleFn2(); // logged: "2 works"
+    return exampleNumber;
+
+    function exampleNumber() {};
+    function exampleFn2() { console.log("I won't be called :("); };
+    function exampleFn2() { console.log("2 works"); };
+};
+console.log(puzzle()) // logged: 2
+console.log(exampleNumber); // logged: 1
 {% endhighlight %}
 
-**Why? (Some boring intro first)**
-
-When requesting nodes from `document` based methods, you don't get an Array instance. You get one of these:
-
-* [NodeList][mozilla-nodelist] - consists of Nodes
-* [HTMLCollection][mozilla-htmlcollection] - consists of Elements, same methods as in NodeList + [namedItem()][mozilla-htmlcollection#methods]
-
-Regardless of which you receive, your collection may either be **live** or **static**.
-
-* **[live collection][w3-collection]** is updated whenever DOM is updated
-* **[static collection][w3-collection]** is a snapshot that remains the same across DOM updates
-
-In general, collections are **live**, except for in the following cases when they become static:
-
-1. [Event path of DOM Event whose target is part of DOM][w3-dispatching-events]
-    (this way, you may remove one of its parents from DOM and its snapshot will still be available via event.path)
-1. [**When you use `document.querySelectorAll`**][w3-interface-parentnode]
-
-**Now, on to the point**
-
-In our snippet, we request two collections via
-
-* `collection1 = getElementsByTagName` - a live collection
-* `collection2 = querySelectorAll` - a static collection
-
-After we add a second `span` to DOM, only `collection1` reflects the change because.
 
 {% include series.html %}
+
 
 [so-js-setinterval]: http://stackoverflow.com/a/731625/1510277
 [so-js-single-thread]: http://stackoverflow.com/questions/2734025/is-javascript-guaranteed-to-be-single-threaded

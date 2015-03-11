@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  "Be careful with array indexes in PHP"
-date:   2015-02-19
+title:  "In PHP you may increment strings"
+date:   2015-02-10
 categories: php
 series: PHP Pitfalls
 ---

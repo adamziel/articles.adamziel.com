@@ -10,17 +10,66 @@
 	{% endif %}
 {% endfor %}
 
-<p>This article is <strong>part {{ idx }}</strong> in <strong>{{ page.series }}</strong> Series.</p>
+{% capture previdx %}{{ idx | minus: '1' }}{% endcapture %}
+{% capture nextidx %}{{ idx | plus: '1' }}{% endcapture %}
+
+
+<p style="margin-top: 80px;">This article is <strong>part {{ idx }}</strong> in <strong>{{ page.series }}</strong> series.</p>
+
+<p>
+    <table class="plain">
+{% assign count = '0' %}
+{% for post in site.posts reversed %}
+	{% if post.series == page.series %}
+		{% capture count %}{{ count | plus: '1' }}{% endcapture %}
+
+        {% if count == nextidx %}
+            <tr>
+                <td>Next:</td>
+                <td>
+                    <a href="{{ post.url }}">
+                        {% if page.nextLabel %}{{ page.nextLabel }}{% else %}{{ post.title }}{% endif %}
+                    </a>
+                </td>
+            </tr>
+        {% endif %}
+	{% endif %}
+{% endfor %}
+
+{% assign count = '0' %}
+{% for post in site.posts reversed %}
+	{% if post.series == page.series %}
+		{% capture count %}{{ count | plus: '1' }}{% endcapture %}
+
+        {% if count == previdx %}
+            <tr>
+                <td>Previous:</td>
+                <td>
+                    <a href="{{ post.url }}">
+                        {% if page.prevLabel %}{{ page.prevLabel }}{% else %}{{ post.title }}{% endif %}
+                    </a>
+                </td>
+            </tr>
+        {% endif %}
+	{% endif %}
+{% endfor %}
+    </table>
+</p>
+
+<p style="margin-top: 80px;">
+    All articles in this series:
+</p>
+
 <ul>
 {% assign count = '0' %}
 {% for post in site.posts reversed %}
 {% if post.series == page.series %}
 {% capture count %}{{ count | plus: '1' }}{% endcapture %}
-    <li>Part {{ count }} -
+    <li>
         {% if page.url == post.url %}
-            This Article
+            <b>Part {{ count }} - {{ post.title }} (this article)</b>
         {% else %}
-            <a href="{{post.url}}">{{post.title}}</a>
+            Part {{ count }} - <a href="{{post.url}}">{{post.title}}</a>
         {% endif %}
     </li>
 {% endif %}

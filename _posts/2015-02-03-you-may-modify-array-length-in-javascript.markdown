@@ -12,10 +12,12 @@ Suppose you modify an Array like the one below. What is being logged?
 var data = [0,1,2,3,4];
 data[600] = 5;
 data.forEach(function(x) { console.log(x); });
+
 console.log('---');
 for(var i=0,max=data.length;i<max;i++) {
     console.log(data[i]);
 }
+
 console.log('---');
 console.log(data.length);
 {% endhighlight %}

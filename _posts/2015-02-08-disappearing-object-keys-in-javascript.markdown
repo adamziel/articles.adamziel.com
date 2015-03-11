@@ -1,102 +1,48 @@
 ---
 layout: post
-title:  "Pitfalls of scopes in Javascript (4/2)"
-date:   2015-03-14
+title:  "Disappearing object keys in Javascript"
+date:   2015-02-08
 categories: javascript
 series: Javascript Pitfalls
 ---
-The specs does not mention scopes a lot.
 
-* [Section 8.6.2][ecma-8.6.2] says that there is an internal property referred to as [[scope]]
-* [Section 10.3][ecma-10.3] says that some locally available variables are not part of [[scope]]
-
-For the sake of clarity, when I refer to a Scope, I mean a [context][ecma-10.3]
-that allows you to define and use a local variable that is not visible to any parent context.
-
-## Scopes pitfalls
-
-By default, there is only a global scope. You can **only** create a new scope by creating
-and calling a function. You may be tempted to try additional ways, however:
-
-* A `with` statement does not create a new scope, it just tricks you
-   by [temporarily augmenting the scope it's declared in][ecma-12.10]
+Suppose you construct an object like the one below. What is the value of `data`?
 
 {% highlight javascript %}
-var a = {};
-console.log(typeof a); // a is "object"
-with({a: 1}) {
-    console.log(typeof a); // a is "number"
-    var bar = 1; // let's create a new variable
-}
-console.log(typeof a); // a is an "object" again
-console.log(bar); // logs: 1, bummer!
+var anotherObject = {toString: function() { return "0"; }};
+
+var data = {};
+
+data[0] = 'lorem';
+data['0'] = 'ipsum';
+data[Number(0)] = 'dolor';
+data[anotherObject] = 'sit';
+data[[]] = 'amet';
+
+console.log(data);
 {% endhighlight %}
 
-* A `catch` statement does the same thing to give you the access to
-  the exception
+In this example, `data` is `{0: "amet", "": "amet"}`. *Why?*
 
-* `let`, `const`, and other ES6 goodies are not covered
+[All keys get converted to strings via toString()][ecma-15.2.3.6] before being added to the object.
 
-## Hoisting pitfall
+`[]` [evaluates to ""][ecma-15.4.4.2], other keys evaluates to `0`.
 
-This behavior is described formally in [ECMAScript Edition 5.1 section 10.5][ecma-10.5], and in more approachable diction
-at [Mozilla var statement reference][mozilla-hoisting], which says:
-
-> Because variable declarations (and declarations in general) are processed
-> before any code is executed, declaring a variable anywhere in the code
-> is equivalent to declaring it at the top
-
-Guess what is the output of this snippet would be:
+Let's go even further. What is being logged in the following case?
 
 {% highlight javascript %}
-var example = 1;
-function puzzle2() {
-    console.log(example);
-    if(example === 1) {
-        var example = 2;
-    }
-};
-puzzle2();
-console.log(example)
+var data = {};
+data[0.1+0.2] = 1;
+
+console.log(data);
 {% endhighlight %}
 
-`undefined` and number `1` respectively. Of course! But why?
+**`Object {0.30000000000000004: 1}`**.
 
-What happens under the hood is roughly explained in the following steps.
-
-1. Execution of `puzzle2` function is requested
-1. Before any code is executed, it is scanned to search for declarations (`var`, `function`).
-    These declarations are used to create a new scope. Since we declared `example` in line 5
-    with `var example = 2;`, the newly created scope contains a local variable `example`
-    [with no value (undefined)][ecma-12.2]. Any further references to `example` will be resolved
-    to that variable and not to a parent-scope variable with the same name.
-1. `console.log(example)` logs `undefined` since this variable has no value yet
-1. `if(example === 1)` evaluates to `false`
-1. `puzzle2()` is finished, `console.log(example)` logs `1`  since the current scope was never affected
-
-Function declarations are processed in the same way, but the result may seem counterintuitive.
-Since declarations are processed before executing a code and assigning values, you get undefined values when working with variable assignments. However, function body is a part of its declaration, so you may call a function right away. The last declaration always wins:
-
-{% highlight javascript %}
-var exampleNumber = 1;
-function puzzle() {
-    function exampleFn1() { console.log("1 works"); };
-    exampleNumber = 2;
-    exampleFn1(); // logged: "1 works"
-    exampleFn2(); // logged: "2 works"
-    return exampleNumber;
-
-    function exampleNumber() {};
-    function exampleFn2() { console.log("I won't be called :("); };
-    function exampleFn2() { console.log("2 works"); };
-};
-console.log(puzzle()) // logged: 2
-console.log(exampleNumber); // logged: 1
-{% endhighlight %}
-
+Why? Because of how floating-point numbers work. More on that in next article:
+[there are no integers in javascript]({% post_url 2015-01-29-php-pitfalls-numeric-strings %}).
 
 {% include series.html %}
-
 
 [so-js-setinterval]: http://stackoverflow.com/a/731625/1510277
 [so-js-single-thread]: http://stackoverflow.com/questions/2734025/is-javascript-guaranteed-to-be-single-threaded

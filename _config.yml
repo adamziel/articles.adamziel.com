@@ -6,7 +6,7 @@ markdown: redcarpet
 highlighter: pygments
 pygments: true
 logo: false
-paginate: 1000
+paginate: 10
 baseurl: /
 permalink: /:title
 domain_name: 'http://articles.symfony2.guru'
