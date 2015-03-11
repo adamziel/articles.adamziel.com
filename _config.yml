@@ -4,6 +4,7 @@ meta_description: "Adam Zielinski - Articles about full-stack web development (P
 
 markdown: redcarpet
 highlighter: pygments
+pygments: true
 logo: false
 paginate: 1000
 baseurl: /

@@ -1,0 +1,31 @@
+
+// everything below is true on PHP 5.6 but
+// false on PHP 5.2 (64bit):
+var_dump(md5('2744819') == INF);
+var_dump(md5('10951062') == INF);
+var_dump(md5('2744819') == pow(10,1000000));
+var_dump(md5('10951062') == pow(10,1000000));
+{% endhighlight %}
+
+Why is this? PHP is limited when comparing ordinary numerical strings:
+
+{% highlight php startinline %}
+// true:
+var_dump("1799999999999999999" == "1799999999999999999.0");
+
+// false on PHP 5.6, true on PHP 5.2 (64bit):
+var_dump("17999999999999999990" == "17999999999999999990.0");
+{% endhighlight %}
+
+But if you use scientific notation, it's a whole different story:
+
+{% highlight php startinline %}
+// true:
+var_dump("18".str_repeat('0', 100) == "18e100");
+
+// true:
+var_dump("18".str_repeat('0', 300) == "18e300");
+
+// false:
+var_dump("18".str_repeat('0', 310) == "18e400");
+{% endhighlight %}

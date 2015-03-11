@@ -1,0 +1,61 @@
+
+# 3. References
+
+**The best reference in PHP is the one you don't use**. Just trust me, don't use them. Let's see why exactly:
+
+What happens here?
+
+{% highlight php %}
+$a = 1;
+$b = &$a;
+{% endhighlight %}
+We created a variable `$b` that is a reference to `$a`, right? Wrong!. [Both point to the same place now][php.references]:
+
+> $a and $b are completely equal here. $a is not pointing to $b or vice versa. $a and $b are pointing to the same place.
+
+What in your opinion will be the result of the following snippet?
+
+{% highlight php %}
+$array = array('foo', 'bar');
+// We want to modify value in our loop,
+// let's use references
+foreach ($array as &$foo);
+
+// Later we need another loop
+foreach ($array as $foo);
+
+// What could go wrong?
+var_dump($array);
+{% endhighlight %}
+
+It will be:
+```
+array(2) {
+  [0]=> string(3) "foo"
+  [1]=> &string(3) "foo"
+}
+```
+
+Once you make variable a reference, it gets stuck as a reference. Only way to get rid of it is tu explicitly `unset()` it.
+
+Can you guess the output this time?
+
+{% highlight php %}
+$a = array(1, 2, 3);
+$b = &$a[0];
+$a2 = $a;
+$a2[0]++;
+
+var_dump($a[0]);
+{% endhighlight %}
+
+It is `2`. Why? `$a[0]` got stuck as a reference which we modified when doing `$a2[0]++;`. That's completely unintuitive and hard to work with.
+
+Or how about this:
+{% highlight php %}
+    function test(&$a) {}
+    $x = [];
+    test($x['foo']);
+{% endhighlight %}
+
+We will get a notice because of an undefined index, right? No cigar, `foo` index will be created because that's how it works.

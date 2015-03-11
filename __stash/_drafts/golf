@@ -1,0 +1,51 @@
+CSS QUIRKS - MARGIN COLLAPSING ETC
+
+# other stuff
+
+For now:
+* setTimeout
+* prototype inheritance
+  __proto__
+  .constructor magic property
+
+
+GOLF:
+* Conversion to number (radix) - not an issue anymore
+    // Numbers with a leading 0 use a radix of 8 (octal)
+    var result = parseInt('0101');
+    // Numbers that start with 0x use a radix of 16 (hexidecimal)
+    var result = parseInt('0x0101');
+    // Numbers starting with anything else assumes a radix of 10
+    var result = parseInt('101');
+    // Or you can specify the radix, in this case 2 (binary)
+    var result = parseInt('0101', 2);
+    http://stackoverflow.com/questions/8763396/javascript-parseint-with-leading-zeros
+* javascript: void(0)
+* var foo = function bar() {}; // named function expression (only 'baz' gets hoisted)
+* debunk WAT! + {1, 2, 3}
+* Math.max(), Math.min()
+
+* (function(arguments) { console.log(arguments); })(1, 2) returns 1
+
+* With statement:
+  http://webreflection.blogspot.com/2009/12/with-worlds-most-misunderstood.html
+  http://yuiblog.com/blog/2006/04/11/with-statement-considered-harmful/
+  var foo = {a:1}; var a = 2; var b = 3; with(foo){ a = b = 10; } console.log(a,b);
+  // does it work in IE???
+  
+  var foo = {foo: 1}
+  with(foo) {}
+
+* "use strict" and minification
+* obj.fn() - what's `this` value? ALSO What is the difference between call and apply?
+* Detecting an undefined object property
+
+
+Number() radix
+
+---
+
+## The `setInterval` pitfall
+
+a call or two may be ommitted
+what if it eats it's own tail?
