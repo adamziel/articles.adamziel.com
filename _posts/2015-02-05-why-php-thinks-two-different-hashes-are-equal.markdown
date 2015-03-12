@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Why PHP thinks two different hashes are equals"
+title:  "Why PHP thinks two different hashes are equal"
 date:   2015-02-05
 categories: php
 series: PHP Pitfalls
