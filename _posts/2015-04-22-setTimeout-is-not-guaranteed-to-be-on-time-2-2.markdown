@@ -49,7 +49,7 @@ Why "it took 1ms to fire callback1"? Why "it took 8ms to fire callback2", which 
 [Every nested call to setTimeout increases the internal *nesting level* variable][mozilla-timeout-nesting]. And if we go deep enough, then this happens:
 > If nesting level is greater than 5, and timeout is less than 4, then increase timeout to 4.
 
-*Why would I do that?* You may not even know that the current *nesting level* is higher than 5. If you're past a callback to a third party library, it may nest a lot of setTimeout calls before giving back the control, especially if you use `promises`.
+*Why would I do that?* You may not even know that the current *nesting level* is higher than 5. If you passed a callback to a third party library, it may nest a lot of setTimeout calls before giving back the control, especially if you use `promises`.
 
 So, what do we do to achieve real 0ms scheduling? We should append a task to a [task queue][whatwg-task-queue] using a mechanism that is not constrained by [timers specification][whatwg-timers]. It turns out that [window.postMessage does just the thing][mozilla-post-message]. [Here is an excellent example][dbaron-timeouts] by David Baron. At [the example page][dbaron-zerotimeout], I get the following results:
 
