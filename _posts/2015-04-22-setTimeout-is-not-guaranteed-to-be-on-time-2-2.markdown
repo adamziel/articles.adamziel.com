@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "setTimeout is not guaranteed to be on time 2/2"
-date:   2015-04-2
+date:   2015-04-22
 categories: javascript
 series: Javascript Pitfalls
 ---
