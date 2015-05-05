@@ -1,0 +1,104 @@
+
+${''} = 4;
+${'0'} = 4;
+
+-------------------------
+
+http://3v4l.org/S2AFZ
+Booleans can be changed within a namespace
+
+<?php
+namespace Foo;
+define('Foo\\true', false);
+
+if (true) {
+    echo "TRUE";
+} else {
+    echo "FALSE!!!";
+}
+
+
+-------------------------
+
+http://3v4l.org/gBT4L
+Argument to a constructor that takes no arguments won't be evaluated
+
+<?php
+
+function bar() { echo "Hi!"; }
+
+class Foo {} // no explicit __construct
+
+$a = new Foo(bar());
+
+-------------------------
+
+http://3v4l.org/gaLMA#v541:
+New binary implementation and its problems
+
+<?php
+// Source: https://bugs.php.net/bug.php?id=61225
+var_dump(0b0+1);
+Output for 5.4.1 - 5.6.6,
+int(1)
+
+Output for 5.4.0
+int(2)
+
+-------------------------
+
+http://3v4l.org/uNUDC
+Overwriting $this when using references
+
+<?php
+
+class x
+{
+    public function __construct()
+    {
+        $x =& $this;
+        $x = new stdClass;
+        var_dump($this);
+    }
+}
+
+var_dump(new x);
+
+object(stdClass)#2 (0) {
+}
+object(x)#1 (0) {
+}
+
+-------------------------
+
+Broken formatting in DateTime
+// Source: https://bugs.php.net/bug.php?id=62476
+
+for ($d=55; $d<65; $d++)
+{
+        $dt = DateTime::createFromFormat ('z.Y', $d.'.2012');
+        $dd = $dt->format ('d.m.Y');
+        echo "$d $dd\n";
+}
+
+-------------------------
+
+Performance problems in array_diff
+// Source: http://3v4l.org/am3S3/perf
+
+<?php
+$i=0; $j=500000;
+while($i < 60000) {
+	$i++; $j++;
+	$data1[] = md5($i);
+	$data2[] = md5($j);
+}
+
+$time = microtime(true);
+
+echo "Starting array_diff\n";
+$data_diff1 = array_diff($data1, $data2);
+
+$time = microtime(true) - $time;
+
+echo 'array_diff() took ' . number_format($time, 3) . ' seconds and returned ' . count($data_diff1) . " entries\n";
