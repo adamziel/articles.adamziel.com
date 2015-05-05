@@ -8,6 +8,7 @@ series: Javascript Pitfalls
 
 
 What will be the result of following snippet?
+
 {% highlight javascript %}
 console.log('starting');
 var start = (new Date()).getTime()
