@@ -10,11 +10,11 @@ paginate: 10
 baseurl: /
 excerpt_separator: ""
 permalink: /:title
-domain_name: 'http://articles.symfony2.guru'
+domain_name: 'http://articles.adamziel.com'
 google_analytics: 'UA-59327638-2'
 
 # Details for the RSS feed generator
-url:            'http://articles.symfony2.guru'
+url:            'http://articles.adamziel.com'
 author:         'Adam Zieliński'
 
 
